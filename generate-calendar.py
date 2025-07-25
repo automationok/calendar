@@ -55,7 +55,7 @@ def generate_calendar():
             max_tokens=400
         )
 
-         calendar_text = response.choices[0].message.content.strip()
+        calendar_text = response.choices[0].message.content.strip()
 
         # Cria arquivo temporário .docx
         unique_id = str(uuid.uuid4())
