@@ -1,7 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import openai
 import os
+from docx import Document
+import tempfile
+import uuid
 
 app = Flask(__name__)
 CORS(app)
@@ -52,8 +55,22 @@ def generate_calendar():
             max_tokens=400
         )
 
-        ai_content = response.choices[0].message.content.strip()
-        return jsonify({"calendar": ai_content})
+         calendar_text = response.choices[0].message.content.strip()
+
+        # Cria arquivo temporário .docx
+        unique_id = str(uuid.uuid4())
+        temp_dir = tempfile.gettempdir()
+        filename = os.path.join(temp_dir, f"calendar_{unique_id}.docx")
+
+        doc = Document()
+        doc.add_heading(f"Content Calendar for {business_name}", 0)
+        for line in calendar_text.split("\n"):
+            doc.add_paragraph(line)
+
+        doc.save(filename)
+
+        # Retorna o arquivo como resposta
+        return send_file(filename, as_attachment=True)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
