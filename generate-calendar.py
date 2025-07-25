@@ -2,9 +2,10 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import openai
 import os
-from docx import Document
+from openpyxl import Workbook
 import tempfile
 import uuid
+
 
 app = Flask(__name__)
 CORS(app)
@@ -57,20 +58,40 @@ def generate_calendar():
 
         calendar_text = response.choices[0].message.content.strip()
 
-        # Cria arquivo temporário .docx
-        unique_id = str(uuid.uuid4())
-        temp_dir = tempfile.gettempdir()
-        filename = os.path.join(temp_dir, f"calendar_{unique_id}.docx")
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Content Calendar"
+        ws.append([f"Content Calendar for {business_name}"])
+        ws.append(["Day", "Post Type", "Description"])
 
-        doc = Document()
-        doc.add_heading(f"Content Calendar for {business_name}", 0)
         for line in calendar_text.split("\n"):
-            doc.add_paragraph(line)
+            if ":" in line:
+                try:
+                    day_part, desc = line.split(":", 1)
+                    if "–" in desc:
+                        post_type, description = desc.split("–", 1)
+                    elif "-" in desc:
+                        post_type, description = desc.split("-", 1)
+                    else:
+                        post_type, description = "", desc
+                    ws.append([day_part.strip(), post_type.strip(), description.strip()])
+                except ValueError:
+                    ws.append([line])  # se falhar, coloca linha inteira
 
-        doc.save(filename)
+        # Gera nome único
+        unique_id = str(uuid.uuid4())
+        filename = f"calendar_{unique_id}.xlsx"
+        path = os.path.join("static", filename)
 
-        # Retorna o arquivo como resposta
-        return send_file(filename, as_attachment=True)
+        # Salva na pasta pública
+        os.makedirs("static", exist_ok=True)
+        wb.save(path)
+
+        # Retorna a URL pública
+        base_url = request.host_url.rstrip("/")
+        file_url = f"{base_url}/static/{filename}"
+
+        return jsonify({"url": file_url}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
