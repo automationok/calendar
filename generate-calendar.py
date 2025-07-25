@@ -23,15 +23,25 @@ def generate_calendar():
     - Industry: {industry}
     - Subscription Plan: {subscription}
 
-    🔥 Requirements:
-    - Create posts that solve audience pain points.
-    - Use current engagement trends.
-    - Include both short-form and long-form content.
-    - Incorporate video ideas.
-    - Optimize for engagement (timing, hashtags, tone).
-
-    🗓 Format:
-    - Day of Week: [Post Type] - [1-sentence description]
+    🎯 Strategy Guidelines:
+    - Every post should address specific audience pain points.
+    - Follow the latest social media engagement trends.
+    - Mix short-form and long-form content.
+    - Include **video content** suggestions in each plan.
+    - Optimize for engagement (best times, emotional hooks, hashtags).
+    
+    📦 If the subscription is "Premium", include exactly:
+    - 📌 Monday: AI-Generated Customer Testimonial Video
+    - 📌 Wednesday: Live Q&A Session (AI Recommends Topics)
+    - 📌 Friday: AI-Optimized Paid Ad Campaign (Social & Google)
+    - 📌 Sunday: Personal Branding Blog Post (SEO-Optimized)
+    
+    🗓 Format your output like this:
+    Day of Week: [Post Type] - [Short Description]
+    Example:
+    📌 Monday: Story-based video post – Highlight a transformation journey of a client.
+    
+    Generate the calendar now:
     """
 
     try:
